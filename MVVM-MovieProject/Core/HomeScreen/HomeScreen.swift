@@ -5,12 +5,13 @@
 //  Created by Yasin Kabak on 29.12.2023.
 //
 
-import Foundation
 import UIKit
 
 protocol HomeScreenInterface : AnyObject{
     func configureVC()
     func configureCollectionView()
+    func reloadCollectionView()
+ 
 }
 
 final class HomeScreen : UIViewController{
@@ -23,6 +24,12 @@ final class HomeScreen : UIViewController{
 }
 
 extension HomeScreen : HomeScreenInterface{
+    func reloadCollectionView() {
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
+    
     func configureCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UIHelper.createHomeFlowLayout())
         view.addSubview(collectionView)
@@ -35,12 +42,12 @@ extension HomeScreen : HomeScreenInterface{
         collectionView.pinToEdgesOfView(view: view)
 
     }
-    
+     
     func configureVC() {
         view.backgroundColor = .systemBackground
     }
     
-    
+     
     
 }
 
@@ -56,6 +63,14 @@ extension HomeScreen : UICollectionViewDelegate,UICollectionViewDataSource{
         return cell
     }
     
-    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let offSet = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.height
+        if offSet > contentHeight - (2*height) {
+            viewModel.getMovies()
+        }
+        
+    }
     
 }

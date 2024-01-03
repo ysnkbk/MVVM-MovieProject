@@ -17,6 +17,7 @@ final class HomeViewModel{
     weak var view: HomeScreenInterface?
     private var service = MovieService()
     var movies: [MovieResult] = []
+    private var page = 1
     
 }
 
@@ -27,16 +28,18 @@ extension HomeViewModel : HomeViewModelInterface {
         getMovies()
     }
     func getMovies() {
-        service.downloadMovies { [weak self] returnedMovies in
+        service.downloadMovies(page: page) { [weak self] returnedMovies in
             guard let self = self else {
                 return}
             guard let returnedMovies = returnedMovies else {
                 return}
-            self.movies = returnedMovies
+            self.movies.append(contentsOf: returnedMovies)
+            self.page += 1
+            self.view?.reloadCollectionView()
 
-            
         }
     }
+     
     
 
     

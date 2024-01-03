@@ -34,7 +34,7 @@ final class MovieCell: UICollectionViewCell{
         posterImageView = PosterImageView(frame: .zero)
         addSubview(posterImageView)
         posterImageView.translatesAutoresizingMaskIntoConstraints = false
-        posterImageView.backgroundColor = .systemBlue
+        posterImageView.backgroundColor = .systemGray5
         posterImageView.pinToEdgesOfView(view: self)
         
     }
