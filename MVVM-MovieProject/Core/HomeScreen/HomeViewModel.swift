@@ -18,7 +18,7 @@ final class HomeViewModel{
     private var service = MovieService()
     var movies: [MovieResult] = []
     private var page = 1
-    
+    var shouldDownloadTrue = true
 }
 
 extension HomeViewModel : HomeViewModelInterface {
@@ -28,6 +28,7 @@ extension HomeViewModel : HomeViewModelInterface {
         getMovies()
     }
     func getMovies() {
+        shouldDownloadTrue = false
         service.downloadMovies(page: page) { [weak self] returnedMovies in
             guard let self = self else {
                 return}
@@ -36,11 +37,19 @@ extension HomeViewModel : HomeViewModelInterface {
             self.movies.append(contentsOf: returnedMovies)
             self.page += 1
             self.view?.reloadCollectionView()
+            shouldDownloadTrue = true
 
         }
     }
-     
-    
+    func getMovieDetail(id: Int) {
+        service.getMovieDetail(id: id) { [weak self] returnedMovieDetail in
+            guard let self = self else {
+                return}
+            guard let  returnedMovieDetail = returnedMovieDetail else {
+                return}
+            self.view?.navigateDetailScreen(movie: returnedMovieDetail )
+        }
+    }
 
     
     

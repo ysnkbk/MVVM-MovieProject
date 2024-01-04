@@ -11,6 +11,7 @@ protocol HomeScreenInterface : AnyObject{
     func configureVC()
     func configureCollectionView()
     func reloadCollectionView()
+    func navigateDetailScreen(movie: MovieResult)
  
 }
 
@@ -24,10 +25,15 @@ final class HomeScreen : UIViewController{
 }
 
 extension HomeScreen : HomeScreenInterface{
-    func reloadCollectionView() {
+    func navigateDetailScreen(movie: MovieResult) {
         DispatchQueue.main.async {
-            self.collectionView.reloadData()
+            let detailScreen = DetailScreen(movie: movie)
+            self.navigationController?.pushViewController(detailScreen, animated: true)
         }
+    }
+    
+    func reloadCollectionView() {
+        self.collectionView.reloadOnMainThread()
     }
     
     func configureCollectionView() {
@@ -45,6 +51,7 @@ extension HomeScreen : HomeScreenInterface{
      
     func configureVC() {
         view.backgroundColor = .systemBackground
+        title = "Popular Movies 🍿 "
     }
     
      
@@ -62,12 +69,20 @@ extension HomeScreen : UICollectionViewDelegate,UICollectionViewDataSource{
         cell.setCell(movie: viewModel.movies[indexPath.item])
         return cell
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.getMovieDetail(id: viewModel.movies[indexPath.item]._id)
+        
+    }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let offSet = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.height
-        if offSet > contentHeight - (2*height) {
+        
+        guard contentHeight != 0 else { return }
+        
+        
+        if offSet > contentHeight - (2*height) && viewModel.shouldDownloadTrue {
             viewModel.getMovies()
         }
         
